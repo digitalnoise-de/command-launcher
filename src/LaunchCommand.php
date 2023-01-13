@@ -200,6 +200,6 @@ final class LaunchCommand extends Command
             }
         }
 
-        throw new RuntimeException();
+        throw new RuntimeException(sprintf('No resolver found for %s', $class));
     }
 }
