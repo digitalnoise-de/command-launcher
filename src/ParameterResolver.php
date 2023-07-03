@@ -15,7 +15,9 @@ interface ParameterResolver
      *
      * @return list<ParameterOption>
      */
-    public function options(string $class): array;
+    public function allOptions(string $class): array;
 
     public function value(string $key): mixed;
+
+    public function manualValue(string $input): mixed;
 }

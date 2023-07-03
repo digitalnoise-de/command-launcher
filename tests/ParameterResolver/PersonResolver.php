@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace Tests\Digitalnoise\CommandLauncher\ParameterResolver;
 
+use Digitalnoise\CommandLauncher\AbstractParameterResolver;
 use Digitalnoise\CommandLauncher\ParameterOption;
 use Digitalnoise\CommandLauncher\ParameterResolver;
+use Tests\Digitalnoise\CommandLauncher\Model\ManualInput;
 use Tests\Digitalnoise\CommandLauncher\ResolverClass\Person;
 
-final class PersonResolver implements ParameterResolver
+final class PersonResolver extends AbstractParameterResolver
 {
     public function supports(string $class): bool
     {
@@ -28,5 +30,10 @@ final class PersonResolver implements ParameterResolver
             'jane' => 'success',
             default => 'error'
         };
+    }
+
+    public function manualValue(string $input): mixed
+    {
+        return ManualInput::fromString($input);
     }
 }

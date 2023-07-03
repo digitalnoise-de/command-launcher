@@ -200,11 +200,15 @@ final class LaunchCommand extends Command
         $resolver = $this->resolverForClass($class);
 
         $options = [];
-        foreach ($resolver->options($class) as $item) {
+        foreach ($resolver->allOptions($class) as $item) {
             $options[$item->key] = $item->label;
         }
 
         $answer = (string)$this->questionHelper->ask($input, $output, new ChoiceQuestion($param->name, $options));
+
+        if ($answer === AbstractParameterResolver::KEY_MANUAL) {
+            return $this->manualAnswer($input, $output, $resolver);
+        }
 
         return $resolver->value($answer);
     }
@@ -248,7 +252,7 @@ final class LaunchCommand extends Command
         $resolver = $this->resolverForClass($class);
 
         $options = [];
-        foreach ($resolver->options($class) as $item) {
+        foreach ($resolver->allOptions($class) as $item) {
             $options[$item->key] = $item->label;
         }
 
@@ -257,6 +261,10 @@ final class LaunchCommand extends Command
             $output,
             new ChoiceQuestion($attribute->getArguments()['param'], $options)
         );
+
+        if ($answer === AbstractParameterResolver::KEY_MANUAL) {
+            return $this->manualAnswer($input, $output, $resolver);
+        }
 
         return $resolver->value($answer);
     }
@@ -269,7 +277,7 @@ final class LaunchCommand extends Command
      */
     private function messageParamAttributesAreValid(array $constructorParams, array $messageParamAttributes)
     {
-        $attributeParams = array_map(fn(ReflectionAttribute $attribute) => $attribute->getArguments()['param'],
+        $attributeParams   = array_map(fn(ReflectionAttribute $attribute) => $attribute->getArguments()['param'],
             $messageParamAttributes
         );
         $constructorParams = array_map(fn(ReflectionParameter $parameter) => $parameter->getName(), $constructorParams);
@@ -279,5 +287,12 @@ final class LaunchCommand extends Command
                 throw ParameterNotFound::forAttributeParam($attributeParam);
             }
         }
+    }
+
+    public function manualAnswer(InputInterface $input, OutputInterface $output, ParameterResolver $resolver): mixed
+    {
+        $manualAnswer = (string)$this->questionHelper->ask($input, $output, new Question('<comment>Manual value: </comment>'));
+
+        return $resolver->manualValue($manualAnswer);
     }
 }
