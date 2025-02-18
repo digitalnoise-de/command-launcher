@@ -96,7 +96,7 @@ final class LaunchCommandTest extends TestCase implements CommandProvider, Comma
     {
         $test = new CommandTester(new LaunchCommand($this, $this, [new PersonResolver()]));
 
-        self::expectExceptionObject(ParameterNotFound::forAttributeParam('inpu'));
+        $this->expectExceptionObject(ParameterNotFound::forAttributeParam('inpu'));
 
         $test->setInputs(['StringCommandWithWrongAttribute', 'jane']);
         $test->execute([]);
