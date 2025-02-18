@@ -16,6 +16,7 @@ use Tests\Digitalnoise\CommandLauncher\Command\DateTimeCommand;
 use Tests\Digitalnoise\CommandLauncher\Command\DateTimeImmutableCommand;
 use Tests\Digitalnoise\CommandLauncher\Command\IntCommand;
 use Tests\Digitalnoise\CommandLauncher\Command\ManualInputCommand;
+use Tests\Digitalnoise\CommandLauncher\Command\ParameterlessCommand;
 use Tests\Digitalnoise\CommandLauncher\Command\StringCommand;
 use Tests\Digitalnoise\CommandLauncher\Command\StringCommandWithAttribute;
 use Tests\Digitalnoise\CommandLauncher\Command\StringCommandWithWrongAttribute;
@@ -28,6 +29,18 @@ use Tests\Digitalnoise\CommandLauncher\ParameterResolver\PersonResolver;
 final class LaunchCommandTest extends TestCase implements CommandProvider, CommandLauncher
 {
     private array $launchedCommands = [];
+
+    /**
+     * @test
+     */
+    public function it_should_launch_parameterless_command(): void
+    {
+        $test = new CommandTester(new LaunchCommand($this, $this, []));
+        $test->setInputs(['ParameterlessCommand']);
+        $test->execute([]);
+
+        self::assertEquals([new ParameterlessCommand()], $this->launchedCommands);
+    }
 
     /**
      * @test
@@ -78,8 +91,8 @@ final class LaunchCommandTest extends TestCase implements CommandProvider, Comma
      */
     public function it_should_show_a_custom_input_option(): void
     {
-        $test = new CommandTester(new LaunchCommand($this, $this, [new PersonResolver()]));
-        $input  = 'A very cool manual input';
+        $test  = new CommandTester(new LaunchCommand($this, $this, [new PersonResolver()]));
+        $input = 'A very cool manual input';
         $test->setInputs(['ManualInputCommand', 'manual', $input]);
         $test->execute([]);
 
@@ -105,6 +118,7 @@ final class LaunchCommandTest extends TestCase implements CommandProvider, Comma
     public function all(): array
     {
         return [
+            ParameterlessCommand::class,
             StringCommand::class,
             IntCommand::class,
             BoolCommand::class,

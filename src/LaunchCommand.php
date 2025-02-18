@@ -56,7 +56,7 @@ final class LaunchCommand extends Command
         // Detect command parameters
         $rc                     = new ReflectionClass($command);
         $constructorParams      = $rc->getConstructor()?->getParameters();
-        $messageParamAttributes = $rc->getConstructor()->getAttributes(MessageParam::class);
+        $messageParamAttributes = $rc->getConstructor()?->getAttributes(MessageParam::class) ?? [];
 
         if (null === $constructorParams) {
             if (!class_exists($command)) {
